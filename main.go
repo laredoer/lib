@@ -6,21 +6,25 @@ import (
 	"github.com/urfave/cli"
 	"log"
 	"os"
+	"strings"
 	"test/tpl"
+)
+var (
+	server string
+	port string
 )
 
 func main() {
 	//日志
 	logs.SetLogger("console")
 
-	logs.Error("欢迎使用rpcb工具")
+	logs.Alert("欢迎使用rpcb工具")
 
 	app := cli.NewApp()
 	app.Name = "rpcb"
 	app.Version = "1.0.0"
 	app.Usage = "Create a rpcx template"
-	var server string
-	var port string
+
 	app.Flags = []cli.Flag {
 		cli.StringFlag{
 			Name: "server",
@@ -50,21 +54,30 @@ func main() {
 			if err != nil {
 				logs.Error("创建失败:%s",err)
 			} else {
-				logs.Info("创建成功")
+				logs.Info("%s 模板创建成功",server)
 			}
-
+			//创建文件
 			f,err := os.Create(fmt.Sprintf("%s/%s.go",path,server))
 			defer f.Close()
 			if err != nil {
 				logs.Error(err.Error())
 			} else {
-				_,err = f.Write([]byte(fmt.Sprintf(tpl.Tpl_main,port,server)))
+				_,err = f.Write([]byte(fmt.Sprintf(tpl.Tpl_main,port,server,strFirstToUpper(server))))
 				if err != nil {
 					logs.Error(err)
 				}
 			}
-		} else {
-			fmt.Println("Hello", server)
+
+			f2,err := os.Create(fmt.Sprintf("%s/handler.go",path))
+			defer f2.Close()
+			if err != nil {
+				logs.Error(err.Error())
+			} else {
+				_,err = f2.Write([]byte(fmt.Sprintf(tpl.Tpl_handler,strFirstToUpper(server),strFirstToUpper(server))))
+				if err != nil {
+					logs.Error(err)
+				}
+			}
 		}
 		return nil
 	}
@@ -84,4 +97,10 @@ func PathExists(path string) (bool, error) {
 		return false, nil
 	}
 	return false, err
+}
+
+
+func strFirstToUpper(str string) string {
+	temp := []byte(str)
+	return strings.Join([]string{strings.ToUpper(string(temp[0])),string(temp[1:])},"")
 }
