@@ -4,7 +4,12 @@ rpcx服务代码创建工具
 
 ```
 //编译
-go install
+make mac || linux || windows
+mac环境:  make mac
 //生成一个服务
-rpcb -server video -port 8973
+rpcb -server video -port 8973  
+
+//说明
+-server <服务名称>
+-port <服务运行的端口>  
 ```
