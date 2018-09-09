@@ -1,6 +1,5 @@
 package tpl
 
-
 const Tpl_main = `package main
 
 import (
@@ -65,7 +64,7 @@ type Response struct {
 	Data    interface{} 
 }
 
-func (v *%s) Get(ctx *context.Context,args Request,reply *Response) (err error){
+func (v *%s) Get(ctx context.Context,args Request,reply *Response) (err error){
 	return nil
 }
 `
