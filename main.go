@@ -56,7 +56,7 @@ func main() {
 			if err != nil {
 				logs.Error("创建失败:%s", err)
 			} else {
-				logs.Info("%s 模板创建成功", server)
+				logs.Alert("%s 模板创建成功", server)
 			}
 			//创建文件 main.go
 			f, err := os.Create(fmt.Sprintf("%s/%s.go", path, server))
