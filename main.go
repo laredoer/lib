@@ -2,16 +2,18 @@ package main
 
 import (
 	"fmt"
-	"github.com/astaxie/beego/logs"
-	"github.com/urfave/cli"
 	"log"
 	"os"
 	"strings"
 	"test/tpl"
+
+	"github.com/astaxie/beego/logs"
+	"github.com/urfave/cli"
 )
+
 var (
 	server string
-	port string
+	port   string
 )
 
 func main() {
@@ -25,17 +27,17 @@ func main() {
 	app.Version = "1.0.0"
 	app.Usage = "Create a rpcx template"
 
-	app.Flags = []cli.Flag {
+	app.Flags = []cli.Flag{
 		cli.StringFlag{
-			Name: "server",
-			Value: "example",
-			Usage: "create a server template",
-			Destination: &server,         //取到的FLAG值，赋值到这个变量
+			Name:        "server",
+			Value:       "example",
+			Usage:       "create a server template",
+			Destination: &server, //取到的FLAG值，赋值到这个变量
 		},
 		cli.StringFlag{
-			Name: "port",
-			Value:"8973",
-			Usage:"server port",
+			Name:        "port",
+			Value:       "8973",
+			Usage:       "server port",
 			Destination: &port,
 		},
 	}
@@ -43,8 +45,8 @@ func main() {
 	app.Action = func(c *cli.Context) error {
 		if c.String("server") != "" {
 
-			path := fmt.Sprintf("./%s",server)
-			b , err := PathExists(path)
+			path := fmt.Sprintf("./%s", server)
+			b, err := PathExists(path)
 			if err != nil || b == true {
 				logs.Error("默认创建example,文件: %s 已经存在", path)
 				return err
@@ -52,28 +54,54 @@ func main() {
 			// 创建文件夹
 			err = os.Mkdir(path, os.ModePerm)
 			if err != nil {
-				logs.Error("创建失败:%s",err)
+				logs.Error("创建失败:%s", err)
 			} else {
-				logs.Info("%s 模板创建成功",server)
+				logs.Info("%s 模板创建成功", server)
 			}
-			//创建文件
-			f,err := os.Create(fmt.Sprintf("%s/%s.go",path,server))
+			//创建文件 main.go
+			f, err := os.Create(fmt.Sprintf("%s/%s.go", path, server))
 			defer f.Close()
 			if err != nil {
 				logs.Error(err.Error())
 			} else {
-				_,err = f.Write([]byte(fmt.Sprintf(tpl.Tpl_main,port,server,strFirstToUpper(server))))
+				logs.Alert("%s/%s.go 创建成功!", path, server)
+				_, err = f.Write([]byte(fmt.Sprintf(tpl.Tpl_main, port, server, strFirstToUpper(server))))
 				if err != nil {
 					logs.Error(err)
 				}
 			}
-
-			f2,err := os.Create(fmt.Sprintf("%s/handler.go",path))
+			//创建文件 handler.go
+			f2, err := os.Create(fmt.Sprintf("%s/handler.go", path))
 			defer f2.Close()
 			if err != nil {
 				logs.Error(err.Error())
 			} else {
-				_,err = f2.Write([]byte(fmt.Sprintf(tpl.Tpl_handler,strFirstToUpper(server),strFirstToUpper(server))))
+				logs.Alert("%s/handler.go 创建成功!", path)
+				_, err = f2.Write([]byte(fmt.Sprintf(tpl.Tpl_handler, strFirstToUpper(server), strFirstToUpper(server))))
+				if err != nil {
+					logs.Error(err)
+				}
+			}
+			//创建文件 datastore.go
+			f3, err := os.Create(fmt.Sprintf("%s/datastore.go", path))
+			defer f3.Close()
+			if err != nil {
+				logs.Error(err.Error())
+			} else {
+				logs.Alert("%s/datastore.go 创建成功!", path)
+				_, err = f3.Write([]byte(tpl.Tpl_datastore))
+				if err != nil {
+					logs.Error(err)
+				}
+			}
+			//创建文件 repository.go
+			f4, err := os.Create(fmt.Sprintf("%s/repository.go", path))
+			defer f4.Close()
+			if err != nil {
+				logs.Error(err.Error())
+			} else {
+				logs.Alert("%s/repository.go 创建成功!", path)
+				_, err = f4.Write([]byte(fmt.Sprintf(tpl.Tpl_repository, strFirstToUpper(server), strFirstToUpper(server))))
 				if err != nil {
 					logs.Error(err)
 				}
@@ -99,8 +127,7 @@ func PathExists(path string) (bool, error) {
 	return false, err
 }
 
-
 func strFirstToUpper(str string) string {
 	temp := []byte(str)
-	return strings.Join([]string{strings.ToUpper(string(temp[0])),string(temp[1:])},"")
+	return strings.Join([]string{strings.ToUpper(string(temp[0])), string(temp[1:])}, "")
 }
