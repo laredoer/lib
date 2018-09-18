@@ -2,9 +2,9 @@ package main
 
 import (
 	"flag"
-	"fmt"
-	"log"
 	"time"
+
+	"github.com/astaxie/beego/logs"
 
 	"github.com/rcrowley/go-metrics"
 	"github.com/smallnest/rpcx/server"
@@ -27,7 +27,8 @@ func main() {
 	s.RegisterName("video", &Video{db: DB}, "")
 	err := s.Serve("tcp", *addr)
 	if err != nil {
-		fmt.Println(err)
+		logs.Error(err)
+		panic(err)
 	}
 }
 
@@ -42,7 +43,7 @@ func addRegistryPlugin(s *server.Server) {
 	}
 	err := r.Start()
 	if err != nil {
-		log.Fatal(err)
+		logs.Error(err)
 	}
 	s.Plugins.Add(r)
 }
