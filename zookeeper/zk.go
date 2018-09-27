@@ -14,11 +14,11 @@ type ZookeeperClient struct {
 	timeout   time.Duration   //超时时间
 	conn      *zk.Conn        //zk连接实例
 	eventChan <-chan zk.Event //zk事件
-	useCount  int32
-	isConnect bool //是否连接
-	once      sync.Once
-	CloseCh   chan struct{} //关闭通道
-	done      bool          //是否手动关闭
+	useCount  int32           //当前使用人数
+	isConnect bool            //是否连接
+	once      sync.Once       //一个锁
+	CloseCh   chan struct{}   //关闭通道
+	done      bool            //是否手动关闭
 }
 
 //New 创建Zookeeper实例
