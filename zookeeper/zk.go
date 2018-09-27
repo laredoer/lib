@@ -37,6 +37,7 @@ func (client *ZookeeperClient) Connect() (err error) {
 		}
 		client.conn = conn
 		client.eventChan = eventChan
+		go client.eventWatch()
 	}
 	atomic.AddInt32(&client.useCount, 1) //原子操作加一
 	time.Sleep(time.Second)
