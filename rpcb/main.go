@@ -5,7 +5,8 @@ import (
 	"log"
 	"os"
 	"strings"
-	"test/tpl"
+
+	"github.com/wule61/lib/tpl"
 
 	"github.com/astaxie/beego/logs"
 	"github.com/urfave/cli"

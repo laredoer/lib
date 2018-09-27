@@ -15,10 +15,11 @@ START:
 			if ok {
 				switch v.State {
 				case zk.StateAuthFailed:
+					logs.Info("链接失败")
 					client.isConnect = false
 				// 已经连接成功
 				case zk.StateConnected:
-					logs.Info("链接成功")
+					logs.Alert("链接成功")
 					client.isConnect = true
 				// 连接Session失效
 				case zk.StateExpired:
@@ -36,6 +37,7 @@ START:
 					client.isConnect = true
 				}
 			} else {
+				logs.Warn("网络断开")
 				client.isConnect = false
 				break START
 			}
