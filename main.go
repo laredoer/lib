@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/astaxie/beego/logs"
@@ -14,5 +15,8 @@ func main() {
 	}
 	c.Connect()
 	defer c.Close()
+	value, v, _ := c.Get("/zookeeper/quota")
+	fmt.Println(string(value))
+	fmt.Println(v)
 	//select {}
 }
