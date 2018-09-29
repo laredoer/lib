@@ -15,7 +15,7 @@ func main() {
 	}
 	c.Connect()
 	defer c.Close()
-	value, v, _ := c.Get("/zookeeper/quota")
+	value, v, _ := c.Get("/zookeeper")
 	fmt.Println(string(value))
 	fmt.Println(v)
 	//select {}

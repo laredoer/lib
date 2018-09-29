@@ -5,6 +5,7 @@ import (
 	"github.com/samuel/go-zookeeper/zk"
 )
 
+//eventWatch zk事件
 func (client *ZookeeperClient) eventWatch() {
 START:
 	for {
