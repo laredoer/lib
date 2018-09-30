@@ -2,7 +2,6 @@ package zk
 
 import (
 	"errors"
-	"fmt"
 	"time"
 )
 
@@ -18,14 +17,11 @@ func (client *ZookeeperClient) Delete(path string) (err error) {
 	var d AllChildren
 	client.GetAllChildren(path, &d)
 	//反转数组
-	x := d.Path
-	fmt.Printf("%v\n", x)
-	reverse(x)
-	fmt.Printf("%v\n", x)
+	reverse(d.Path)
 	//开启协程删除节点
 	ch := make(chan error, 1)
 	go func(chan error) {
-		for _, v := range x {
+		for _, v := range d.Path {
 			err = client.conn.Delete(v, -1)
 		}
 		ch <- err
@@ -39,6 +35,7 @@ func (client *ZookeeperClient) Delete(path string) (err error) {
 	}
 }
 
+//reverse 反转数组
 func reverse(x []string) {
 	for i, j := 0, len(x)-1; i < j; i, j = i+1, j-1 {
 		x[i], x[j] = x[j], x[i]
