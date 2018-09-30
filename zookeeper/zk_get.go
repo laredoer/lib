@@ -62,6 +62,7 @@ func (client *ZookeeperClient) GetChildren(path string) (paths []string, version
 	}
 	if client.done {
 		err = errors.New("链接已手动关闭，获取子节点失败")
+		return
 	}
 	//开启协程获取子节点
 	ch := make(chan interface{}, 1)

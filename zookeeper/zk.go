@@ -5,6 +5,7 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/astaxie/beego/logs"
 	"github.com/samuel/go-zookeeper/zk"
 )
 
@@ -67,6 +68,7 @@ func (client *ZookeeperClient) Close() (err error) {
 	client.once.Do(func() {
 		close(client.CloseCh)
 	})
+	logs.Alert("链接已关闭")
 	return nil
 }
 

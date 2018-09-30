@@ -15,7 +15,7 @@ func main() {
 	}
 	c.Connect()
 	defer c.Close()
-	value, _ := c.Exists("/zookeeper")
+	value, _ := c.Exists("/a")
 	fmt.Println(value)
 
 	//select {}
