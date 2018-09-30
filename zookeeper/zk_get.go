@@ -48,10 +48,14 @@ func (client *ZookeeperClient) Get(path string) (value string, version int32, er
 	}
 }
 
-type getChildrenType struct {
+type GetChildrenType struct {
 	data    []string
 	version int32
 	err     error
+}
+
+type AllChildren struct {
+	Path []string
 }
 
 //GetChildren 获取节点下面的子节点
@@ -68,7 +72,7 @@ func (client *ZookeeperClient) GetChildren(path string) (paths []string, version
 	ch := make(chan interface{}, 1)
 	go func(ch chan interface{}) {
 		data, stat, err := client.conn.Children(path)
-		ch <- getChildrenType{data: data, version: stat.Version, err: err}
+		ch <- GetChildrenType{data: data, version: stat.Version, err: err}
 	}(ch)
 
 	select {
@@ -76,12 +80,24 @@ func (client *ZookeeperClient) GetChildren(path string) (paths []string, version
 		err = fmt.Errorf("获取子节超时")
 		return
 	case data := <-ch:
-		paths = data.(getChildrenType).data
-		version = data.(getChildrenType).version
-		err = data.(getChildrenType).err
+		paths = data.(GetChildrenType).data
+		version = data.(GetChildrenType).version
+		err = data.(GetChildrenType).err
 		if err != nil {
 			err = fmt.Errorf("get node(%s) children error(err:%v)", path, err)
 		}
 		return
+	}
+}
+
+//GetAllChildren 获取所有子节点
+func (client *ZookeeperClient) GetAllChildren(path string, c *AllChildren) {
+
+	data, _, _ := client.conn.Children(path)
+	//fmt.Println(data)
+	//fmt.Println(path)
+	c.Path = append(c.Path, path)
+	for _, v := range data {
+		client.GetAllChildren(path+"/"+v, c)
 	}
 }

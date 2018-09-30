@@ -15,7 +15,9 @@ func main() {
 	}
 	c.Connect()
 	defer c.Close()
+
 	err = c.Delete("/a")
+
 	fmt.Println(err)
 
 	//select {}
