@@ -15,8 +15,8 @@ func main() {
 	}
 	c.Connect()
 	defer c.Close()
-	value, _ := c.Exists("/a")
-	fmt.Println(value)
+	err = c.Delete("/a")
+	fmt.Println(err)
 
 	//select {}
 }

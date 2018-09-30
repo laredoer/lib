@@ -13,7 +13,6 @@ func (client *ZookeeperClient) Delete(path string) (err error) {
 	if client.done {
 		err = errors.New("链接已经手动关闭")
 	}
-
 	//开启协程删除节点
 	ch := make(chan error, 1)
 	go func(chan error) {
