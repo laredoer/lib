@@ -48,7 +48,7 @@ func main() {
 
 		finalASCIIArt := asciiArt(getHeight(v, 120))
 		fmt.Println(string(finalASCIIArt))
-		time.Sleep(time.Millisecond * 200)
+		time.Sleep(time.Millisecond * 100)
 	}
 
 }

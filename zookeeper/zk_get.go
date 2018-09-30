@@ -47,3 +47,40 @@ func (client *ZookeeperClient) Get(path string) (value string, version int32, er
 		return
 	}
 }
+
+type getChildrenType struct {
+	data    []string
+	version int32
+	err     error
+}
+
+//GetChildren 获取节点下面的子节点
+func (client *ZookeeperClient) GetChildren(path string) (paths []string, version int32, err error) {
+	if !client.isConnect {
+		err = errors.New("链接已关闭，获取子节点失败")
+		return
+	}
+	if client.done {
+		err = errors.New("链接已手动关闭，获取子节点失败")
+	}
+	//开启协程获取子节点
+	ch := make(chan interface{}, 1)
+	go func(ch chan interface{}) {
+		data, stat, err := client.conn.Children(path)
+		ch <- getChildrenType{data: data, version: stat.Version, err: err}
+	}(ch)
+
+	select {
+	case <-time.After(time.Second * 2):
+		err = fmt.Errorf("获取子节超时")
+		return
+	case data := <-ch:
+		paths = data.(getChildrenType).data
+		version = data.(getChildrenType).version
+		err = data.(getChildrenType).err
+		if err != nil {
+			err = fmt.Errorf("get node(%s) children error(err:%v)", path, err)
+		}
+		return
+	}
+}

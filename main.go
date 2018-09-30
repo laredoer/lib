@@ -9,14 +9,14 @@ import (
 )
 
 func main() {
-	c, err := zk.New([]string{"localhost:2181"}, time.Second)
+	c, err := zk.New([]string{"132.232.109.253:2181"}, time.Second)
 	if err != nil {
 		logs.Error(err)
 	}
 	c.Connect()
 	defer c.Close()
-	value, v, _ := c.Get("/zookeeper")
-	fmt.Println(string(value))
-	fmt.Println(v)
+	value, _ := c.Exists("/zookeeper")
+	fmt.Println(value)
+
 	//select {}
 }
