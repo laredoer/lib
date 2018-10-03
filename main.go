@@ -9,16 +9,35 @@ import (
 )
 
 func main() {
-	c, err := zk.New([]string{"132.232.109.253:2181"}, time.Second)
+	c, err := zk.New([]string{"127.0.0.1:2181", "127.0.0.1:2182", "127.0.0.1:2183"}, time.Second)
 	if err != nil {
 		logs.Error(err)
 	}
 	c.Connect()
 	defer c.Close()
+	snapshots, errs := c.WatchServerList("/node")
+	go func() {
+		for {
+			select {
+			case serverList := <-snapshots:
+				fmt.Println(serverList)
+			case erros := <-errs:
+				fmt.Println(erros)
+			}
+		}
+	}()
 
-	err = c.Delete("/a")
+	configs, errors := c.WatchGetData("/node")
 
-	fmt.Println(err)
-
-	//select {}
+	go func() {
+		for {
+			select {
+			case configData := <-configs:
+				fmt.Println(string(configData))
+			case err = <-errors:
+				fmt.Println(err)
+			}
+		}
+	}()
+	select {}
 }

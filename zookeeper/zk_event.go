@@ -45,3 +45,49 @@ START:
 		}
 	}
 }
+
+func (client *ZookeeperClient) WatchServerList(path string) (chan []string, chan error) {
+	snapshots := make(chan []string)
+	errors := make(chan error)
+
+	go func() {
+		for {
+			snapshot, _, events, err := client.conn.ChildrenW(path)
+			if err != nil {
+				errors <- err
+				return
+			}
+			snapshots <- snapshot
+			evt := <-events
+			if evt.Err != nil {
+				errors <- evt.Err
+				return
+			}
+		}
+	}()
+
+	return snapshots, errors
+}
+
+func (client *ZookeeperClient) WatchGetData(path string) (chan []byte, chan error) {
+	snapshots := make(chan []byte)
+	errors := make(chan error)
+
+	go func() {
+		for {
+			dataBuf, _, event, err := client.conn.GetW(path)
+			if err != nil {
+				errors <- err
+				return
+			}
+			snapshots <- dataBuf
+			evt := <-event
+			if evt.Err != nil {
+				errors <- evt.Err
+				return
+			}
+		}
+
+	}()
+	return snapshots, errors
+}
